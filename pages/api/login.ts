@@ -1,16 +1,31 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import type { ResponseDefaultMsg } from '../../types/ResponseDefaultMsg';
-import { connectMongoDB } from '../../middlewares/connectionMongoDB';
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { ResponseDefaultMsg } from "../../types/ResponseDefaultMsg";
+import type { ResponseLogin } from "../../types/ResponseLogin";
+import { connectMongoDB } from "../../middlewares/connectMongoDB";
+import { UserModel } from "../../models/UserModel";
 
-const endpointLogin = (req: NextApiRequest, res: NextApiResponse<ResponseDefaultMsg>) => {
-  if (req.method === 'POST') {
-    const {login, senha} = req.body;
-    if (login === 'admin' && senha === '123456') {
-      return res.status(200).json({msg: 'Usuário autenticado com sucesso!'});
-    }
-      return res.status(400).json({error: 'Usuário ou senha inválidos!'});
+import jwt from "jsonwebtoken";
+import md5 from "md5";
+
+const endpointLogin = async (req: NextApiRequest, res: NextApiResponse<ResponseDefaultMsg | ResponseLogin>) => {
+  const {JWT_KEY} = process.env;
+  if (!JWT_KEY) {
+    return res.status(500).json({error : 'ENV JWT não informado!'});
   }
-    return res.status(405).json({error: 'Método informado não é válido!'});
+
+  if (req.method === 'POST') {
+    const {email, password} = req.body;
+
+    const userValidation = await UserModel.find({email : email, password : md5(password)});
+    if (userValidation && userValidation.length > 0) {
+      const user = userValidation[0];
+
+      const token = jwt.sign({_id : user._id}, JWT_KEY);
+      return res.status(200).json({name : user.name, email : user.email, token});
+    }
+      return res.status(400).json({error : 'E-mail ou senha inválidos!'});
+  }
+    return res.status(405).json({error : 'Método informado não é válido!'});
 }
 
 export default connectMongoDB(endpointLogin);
