@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { validateTokenJWT } from "../../middlewares/validateTokenJWT"
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  res.status(200).json({
-    data : new Date()
-  });
+const userEndpoint = (req : NextApiRequest, res : NextApiResponse) => {
+  return res.status(200).json('Usuário autenticado com sucesso!');
 }
+
+export default validateTokenJWT(userEndpoint);
