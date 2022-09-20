@@ -30,10 +30,10 @@ const uploadImageCosmic = async (req : any) => {
       buffer : req.file.buffer
     };
 
-    if (req.url && req.url.includes('avatar')) {
-      return await bucketAvatars.addMedia({media : mediaObject})
-    } else {
+    if (req.url && req.url.includes('product')) {
       return await bucketProducts.addMedia({media : mediaObject})
+    } else {
+      return await bucketAvatars.addMedia({media : mediaObject})
     }
   }
 }
