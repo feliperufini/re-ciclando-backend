@@ -3,6 +3,7 @@ import type { ResponseDefaultMsg } from '../../../types/ResponseDefaultMsg';
 import { validateTokenJWT } from '../../../middlewares/validateTokenJWT';
 import { connectMongoDB } from '../../../middlewares/connectMongoDB';
 import { ProductModel } from '../../../models/ProductModel';
+import { policyCors } from '../../../middlewares/policyCors';
 
 const productListEndpoint = async (req: NextApiRequest, res: NextApiResponse<ResponseDefaultMsg | any>) => {
   try {
@@ -31,4 +32,4 @@ const productListEndpoint = async (req: NextApiRequest, res: NextApiResponse<Res
   return res.status(400).json({ error: 'Não foi possível obter os produtos!' });
 }
 
-export default validateTokenJWT(connectMongoDB(productListEndpoint));
+export default policyCors(validateTokenJWT(connectMongoDB(productListEndpoint)));

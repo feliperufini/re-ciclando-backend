@@ -3,6 +3,7 @@ import type { ResponseDefaultMsg } from "../../../types/ResponseDefaultMsg";
 import { connectMongoDB } from "../../../middlewares/connectMongoDB";
 import { validateTokenJWT } from "../../../middlewares/validateTokenJWT";
 import { ProductModel } from "../../../models/ProductModel";
+import { policyCors } from "../../../middlewares/policyCors";
 
 const searchProductEndpoint = async (req: NextApiRequest, res: NextApiResponse<ResponseDefaultMsg | any[]>) => {
   try {
@@ -31,4 +32,4 @@ const searchProductEndpoint = async (req: NextApiRequest, res: NextApiResponse<R
   }
 }
 
-export default validateTokenJWT(connectMongoDB(searchProductEndpoint));
+export default policyCors(validateTokenJWT(connectMongoDB(searchProductEndpoint)));

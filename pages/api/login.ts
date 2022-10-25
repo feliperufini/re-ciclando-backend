@@ -6,6 +6,7 @@ import { UserModel } from "../../models/UserModel";
 
 import jwt from "jsonwebtoken";
 import md5 from "md5";
+import { policyCors } from "../../middlewares/policyCors";
 
 const endpointLogin = async (req: NextApiRequest, res: NextApiResponse<ResponseDefaultMsg | ResponseLogin>) => {
   const {JWT_KEY} = process.env;
@@ -28,4 +29,4 @@ const endpointLogin = async (req: NextApiRequest, res: NextApiResponse<ResponseD
     return res.status(405).json({error : 'Método informado não é válido!'});
 }
 
-export default connectMongoDB(endpointLogin);
+export default policyCors(connectMongoDB(endpointLogin));

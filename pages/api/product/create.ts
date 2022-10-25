@@ -6,6 +6,7 @@ import { validateTokenJWT } from "../../../middlewares/validateTokenJWT";
 import { ProductModel } from "../../../models/ProductModel";
 
 import nc from "next-connect";
+import { policyCors } from "../../../middlewares/policyCors";
 
 const handler = nc()
   .use(upload.single('file'))
@@ -60,4 +61,4 @@ export const config = {
   }
 }
 
-export default validateTokenJWT(connectMongoDB(handler));
+export default policyCors(validateTokenJWT(connectMongoDB(handler)));

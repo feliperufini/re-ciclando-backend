@@ -5,6 +5,7 @@ import { validateTokenJWT } from "../../../middlewares/validateTokenJWT"
 import { UserModel } from "../../../models/UserModel";
 import { upload, uploadImageCosmic } from "../../../services/UploadImageCosmic";
 import nc from "next-connect";
+import { policyCors } from "../../../middlewares/policyCors";
 
 const handler = nc()
   .use(upload.single('file'))
@@ -59,4 +60,4 @@ export const config = {
   }
 }
 
-export default validateTokenJWT(connectMongoDB(handler));
+export default policyCors(validateTokenJWT(connectMongoDB(handler)));
