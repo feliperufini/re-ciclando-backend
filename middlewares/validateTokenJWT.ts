@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse, NextApiHandler} from 'next';
 import type { ResponseDefaultMsg } from '../types/ResponseDefaultMsg';
-import mongoose from 'mongoose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export const validateTokenJWT = (handler : NextApiHandler) => (req : NextApiRequest, res : NextApiResponse<ResponseDefaultMsg>) => {
