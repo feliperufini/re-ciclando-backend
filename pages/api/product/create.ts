@@ -46,7 +46,7 @@ const handler = nc()
         }
 
         await ProductModel.create(product);
-        return res.status(200).json({ error: 'Produto cadastrado com sucesso!' });
+        return res.status(200).json({ msg: 'Produto cadastrado com sucesso!' });
         
       } catch (e) {
         console.log(e);
