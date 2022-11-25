@@ -15,6 +15,7 @@ const endpointLogin = async (req: NextApiRequest, res: NextApiResponse<ResponseD
   }
 
   if (req.method === 'POST') {
+    console.log(req?.body);
     const {email, password} = req.body;
 
     const userValidation = await UserModel.find({email : email, password : md5(password)});
