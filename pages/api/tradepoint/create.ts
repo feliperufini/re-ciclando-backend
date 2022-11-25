@@ -2,7 +2,7 @@ import type { NextApiResponse } from "next";
 import type { ResponseDefaultMsg } from "../../../types/ResponseDefaultMsg";
 import { connectMongoDB } from "../../../middlewares/connectMongoDB";
 import { validateTokenJWT } from "../../../middlewares/validateTokenJWT";
-import { FeedstockModel } from "../../../models/FeedstockModel";
+import { TradepointModel } from "../../../models/TradepointModel";
 
 import nc from "next-connect";
 import { policyCors } from "../../../middlewares/policyCors";
@@ -15,31 +15,27 @@ const handler = nc()
           return res.status(400).json({ error: 'Parâmetros de entrada inválidos!' });
         }
 
-        const {name, coin, inventory} = req?.body;
+        const {title, address} = req?.body;
 
         // verificar os dados (regex)
-        if (!name || name.length < 3) {
-          return res.status(400).json({ error: 'Nome do matéria prima inválido!' });
+        if (!title || title.length < 3) {
+          return res.status(400).json({ error: 'Título do ponto de troca inválido!' });
         }
-        if (!coin || coin <= 0) {
-          return res.status(400).json({ error: 'Preço da matéria prima inválido!' });
-        }
-        if (!inventory || inventory < 0) {
-          return res.status(400).json({ error: 'Quantidade do matéria prima inválida!' });
+        if (!address || address.length < 3) {
+          return res.status(400).json({ error: 'Endereço do ponto de troca inválido!' });
         }
 
-        const feedstock  = {
-          name,
-          coin,
-          inventory
+        const tradepoint  = {
+          title,
+          address
         }
 
-        await FeedstockModel.create(feedstock);
-        return res.status(200).json({ msg: 'Matéria prima cadastrada com sucesso!' });
+        await TradepointModel.create(tradepoint);
+        return res.status(200).json({ msg: 'Ponto de troca cadastrado com sucesso!' });
         
       } catch (e) {
         console.log(e);
-        return res.status(400).json({ error: 'Erro ao cadastrar matéria prima!' });
+        return res.status(400).json({ error: 'Erro ao cadastrar ponto de troca!' });
       }
     }
   );

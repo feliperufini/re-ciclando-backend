@@ -14,7 +14,7 @@ const handler = nc()
     async (req: any, res: NextApiResponse<ResponseDefaultMsg>) => {
       try {
         if (!req || !req.body) {
-          return res.status(400).json({ error: 'Parametros de entrada inválidos!' });
+          return res.status(400).json({ error: 'Parâmetros de entrada inválidos!' });
         }
 
         const {name, description, coast, inventory} = req?.body;
