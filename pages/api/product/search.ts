@@ -17,7 +17,8 @@ const searchProductEndpoint = async (req: NextApiRequest, res: NextApiResponse<R
       return res.status(400).json({ error: 'Informe pelo menos dois caracteres na busca!' });
     }
 
-    const productsSearch = await ProductModel.find({
+      const productsSearch = await ProductModel.find({
+      inventory: { $gt: 0 },
       $or: [
         {name: {$regex : filter, $options: 'i'}},
         {description: {$regex : filter, $options: 'i'}}

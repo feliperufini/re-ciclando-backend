@@ -16,8 +16,7 @@ const productListEndpoint = async (req: NextApiRequest, res: NextApiResponse<Res
         }
         return res.status(200).json(product);
       } else {
-        // retorna todos os produtos
-        const products = await ProductModel.find();
+        const products = await ProductModel.find({ inventory: { $gt: 0 } }); // apenas os com estoque positivo
         if (!products) {
           return res.status(400).json({ error: 'Nenhum produto foi encontrado!' });
         }
