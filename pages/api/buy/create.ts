@@ -1,15 +1,15 @@
 import type { NextApiResponse } from "next";
 import type { ResponseDefaultMsg } from "../../../types/ResponseDefaultMsg";
-import { upload, uploadImageCosmic } from "../../../services/UploadImageCosmic";
 import { connectMongoDB } from "../../../middlewares/connectMongoDB";
 import { validateTokenJWT } from "../../../middlewares/validateTokenJWT";
+import { BuyModel } from "../../../models/BuyModel";
 import { ProductModel } from "../../../models/ProductModel";
+import { UserModel } from "../../../models/UserModel";
 
 import nc from "next-connect";
 import { policyCors } from "../../../middlewares/policyCors";
 
 const handler = nc()
-  .use(upload.single('file'))
   .post(
     async (req: any, res: NextApiResponse<ResponseDefaultMsg>) => {
       try {
@@ -17,48 +17,43 @@ const handler = nc()
           return res.status(400).json({ error: 'Parâmetros de entrada inválidos!' });
         }
 
-        const {name, description, coast, inventory} = req?.body;
+        const {userId, productId} = req?.body;
 
         // verificar os dados (regex)
-        if (!name || name.length < 3) {
-          return res.status(400).json({ error: 'Nome do produto inválido!' });
+        if (!userId) {
+          return res.status(400).json({ error: 'Usuário não encontrado!' });
         }
-        if (!description || description.length < 3) {
-          return res.status(400).json({ error: 'Descrição do produto inválida!' });
-        }
-        if (!coast || coast <= 0) {
-          return res.status(400).json({ error: 'Custo do produto inválido!' });
-        }
-        if (!inventory) {
-          return res.status(400).json({ error: 'Quantidade do produto inválida!' });
-        }
-        if (!req.file || !req.file.originalname) {
-          return res.status(400).json({ error: 'Foto do produto é obrigatória!' });
+        if (!productId) {
+          return res.status(400).json({ error: 'Produto não encontrado!' });
         }
 
-        const photo = await uploadImageCosmic(req);
-        const product  = {
-          name,
-          description,
-          coast,
-          inventory,
-          photo : photo.media.url
+        // recupera os dados do produto e a data
+        const product = await ProductModel.findById(productId);
+        const user = await UserModel.findById(userId);
+        const coin = product.coast;
+        const date = Date.now();
+
+        const buy  = {
+          userId,
+          productId,
+          coin,
+          date
         }
 
-        await ProductModel.create(product);
-        return res.status(200).json({ msg: 'Produto cadastrado com sucesso!' });
-        
+        await BuyModel.create(buy);
+
+        // da baixa no estoque do produto
+        await ProductModel.findByIdAndUpdate(productId, { inventory: product.inventory - 1});
+
+        // da baixa no saldo do usuario
+        await UserModel.findByIdAndUpdate(userId, { coin: user.coin - product.coast});
+
+        return res.status(200).json({ msg: 'Venda cadastrada com sucesso!' });
       } catch (e) {
         console.log(e);
-        return res.status(400).json({ error: 'Erro ao cadastrar produto!' });
+        return res.status(400).json({ error: 'Erro ao cadastrar venda!' });
       }
     }
   );
-
-export const config = {
-  api: {
-    bodyParser : false
-  }
-}
 
 export default policyCors(validateTokenJWT(connectMongoDB(handler)));
