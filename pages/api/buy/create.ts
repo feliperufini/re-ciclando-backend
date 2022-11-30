@@ -33,6 +33,10 @@ const handler = nc()
         const coin = product.coast;
         const date = Date.now();
 
+        if (user.coin < product.coast) {
+          return res.status(400).json({ error: 'Você não possui saldo para comprar este produto!' });
+        }
+
         const buy  = {
           userId,
           productId,
