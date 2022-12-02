@@ -11,14 +11,13 @@ const handler = nc()
   .put(
     async (req: any, res: NextApiResponse<ResponseDefaultMsg>) => {
       try {
-        const { feedstockId } = req?.body;
-        const feedstock = await FeedstockModel.findById(feedstockId);
+        const { feedstockId, userId, amount } = req?.body;
 
+        const feedstock = await FeedstockModel.findById(feedstockId);
         if (!feedstock) {
           return res.status(400).json({ error: 'Matéria prima não encontrada!' });
         }
 
-        const { userId, amount } = req?.body;
         const date = Date.now();
         if (!userId || !amount) {
           return res.status(412).json({ error: 'Existem informações que não foram passadas por parâmetro!' });

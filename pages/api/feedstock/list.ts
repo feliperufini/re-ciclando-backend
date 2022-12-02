@@ -17,7 +17,7 @@ const feedstockListEndpoint = async (req: NextApiRequest, res: NextApiResponse<R
         return res.status(200).json(feedstock);
       } else {
         // retorna todos as matéria primas
-        const feedstocks = await FeedstockModel.find();
+        const feedstocks = await FeedstockModel.find().sort({ name: 1 });
         if (!feedstocks) {
           return res.status(400).json({ error: 'Nenhuma matéria prima foi encontrada!' });
         }
