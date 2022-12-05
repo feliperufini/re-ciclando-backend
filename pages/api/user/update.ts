@@ -11,16 +11,34 @@ const handler = nc()
   .use(upload.single('file'))
   .put(async (req: any, res: NextApiResponse<ResponseDefaultMsg>) => {
     try {
-      const { userId } = req?.query;
-      const user = await UserModel.findById(userId);
+      const { id } = req?.query;
+      const user = await UserModel.findById(id);
 
       if (!user) {
         return res.status(400).json({ error: 'Usuário não encontrado!' });
       }
 
-      const { name } = req?.body;
+      const { name, email, password, emailValidation, level, coin, status } = req?.body;
       if (name && name.length > 2) {
         user.name = name;
+      }
+      if (email) {
+        user.email = email;
+      }
+      if (password && password.length > 5) {
+        user.password = password;
+      }
+      if (emailValidation) {
+        user.emailValidation = emailValidation;
+      }
+      if (level) {
+        user.level = level;
+      }
+      if (coin && coin > 0) {
+        user.coin = coin;
+      }
+      if (status) {
+        user.status = status;
       }
 
       // enviar imagem do multer para o cosmic
