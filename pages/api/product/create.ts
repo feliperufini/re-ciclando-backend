@@ -32,22 +32,31 @@ const handler = nc()
         if (!inventory) {
           return res.status(400).json({ error: 'Quantidade do produto inválida!' });
         }
+
         if (!req.file || !req.file.originalname) {
-          return res.status(400).json({ error: 'Foto do produto é obrigatória!' });
+          const product  = {
+            name,
+            description,
+            coast,
+            inventory,
+            photo : null
+          }
+  
+          await ProductModel.create(product);
+          return res.status(200).json({ msg: 'Produto cadastrado com sucesso!' });
+        } else {
+          const photo = await uploadImageCosmic(req);
+          const product  = {
+            name,
+            description,
+            coast,
+            inventory,
+            photo : photo.media.url
+          }
+  
+          await ProductModel.create(product);
+          return res.status(200).json({ msg: 'Produto cadastrado com sucesso!' });
         }
-
-        const photo = await uploadImageCosmic(req);
-        const product  = {
-          name,
-          description,
-          coast,
-          inventory,
-          photo : photo.media.url
-        }
-
-        await ProductModel.create(product);
-        return res.status(200).json({ msg: 'Produto cadastrado com sucesso!' });
-        
       } catch (e) {
         console.log(e);
         return res.status(400).json({ error: 'Erro ao cadastrar produto!' });

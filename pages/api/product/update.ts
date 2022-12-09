@@ -22,8 +22,9 @@ const handler = nc()
   })
   .put(async (req: any, res: NextApiResponse<ResponseDefaultMsg>) => {
     try {
-      const { productId } = req?.query;
-      const product = await ProductModel.findById(productId);
+      const { id } = req?.body;
+      
+      const product = await ProductModel.findById(id);
 
       if (!product) {
         return res.status(400).json({ error: 'Produto não encontrado!' });
