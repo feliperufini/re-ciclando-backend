@@ -3,12 +3,14 @@ import type { ResponseDefaultMsg } from "../../../types/ResponseDefaultMsg";
 import { connectMongoDB } from "../../../middlewares/connectMongoDB";
 import { validateTokenJWT } from "../../../middlewares/validateTokenJWT";
 import { FeedstockModel } from "../../../models/FeedstockModel";
+import { TradeModel } from "../../../models/TradeModel";
+import { UserModel } from "../../../models/UserModel";
 
 import nc from "next-connect";
 import { policyCors } from "../../../middlewares/policyCors";
 
 const handler = nc()
-  .put(
+  .post(
     async (req: any, res: NextApiResponse<ResponseDefaultMsg>) => {
       try {
         const { feedstockId, userId, amount } = req?.body;
@@ -17,24 +19,26 @@ const handler = nc()
         if (!feedstock) {
           return res.status(400).json({ error: 'Matéria prima não encontrada!' });
         }
-
+        if (!userId) {
+          return res.status(412).json({ error: 'Usuário não informado!' });
+        }
+        if (!amount) {
+          return res.status(412).json({ error: 'Quantidade não informada!' });
+        }
+        
         const date = Date.now();
-        if (!userId || !amount) {
-          return res.status(412).json({ error: 'Existem informações que não foram passadas por parâmetro!' });
+        const user = await UserModel.findById(userId);
+        const coin = ((feedstock.coin/1000) * amount + user.coin).toFixed();
+        const product  = {
+          userId,
+          feedstockId,
+          amount,
+          coin,
+          date
         }
 
-        await FeedstockModel.updateOne(
-          { _id: feedstockId },
-          {
-            $push: {
-              "trade": {
-                userId: userId,
-                amount: amount,
-                date: date
-              }
-            }
-          }
-        );
+        await TradeModel.create(product);
+        await UserModel.findByIdAndUpdate(userId, { coin: coin});
 
         return res.status(200).json({ msg: 'Troca cadastrada com sucesso!' });
       } catch (e) {

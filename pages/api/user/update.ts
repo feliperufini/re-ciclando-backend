@@ -6,6 +6,7 @@ import { UserModel } from "../../../models/UserModel";
 import { upload, uploadImageCosmic } from "../../../services/UploadImageCosmic";
 import nc from "next-connect";
 import { policyCors } from "../../../middlewares/policyCors";
+import md5 from "md5";
 
 const handler = nc()
   .use(upload.single('file'))
@@ -26,7 +27,7 @@ const handler = nc()
         user.email = email;
       }
       if (password && password.length > 5) {
-        user.password = password;
+        user.password = md5(password);
       }
       if (emailValidation) {
         user.emailValidation = emailValidation;
