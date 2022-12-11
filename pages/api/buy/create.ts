@@ -41,6 +41,7 @@ const handler = nc()
           userId,
           productId,
           coin,
+          deliver: false,
           date
         }
 

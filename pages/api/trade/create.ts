@@ -28,17 +28,18 @@ const handler = nc()
         
         const date = Date.now();
         const user = await UserModel.findById(userId);
-        const coin = ((feedstock.coin/1000) * amount + user.coin).toFixed();
-        const product  = {
+        const totalCoinOfTrade = (feedstock.coin * (amount/1000)).toFixed();
+        const newUserCoin = user.coin + totalCoinOfTrade;
+        const trade  = {
           userId,
           feedstockId,
           amount,
-          coin,
+          coin: totalCoinOfTrade,
           date
         }
 
-        await TradeModel.create(product);
-        await UserModel.findByIdAndUpdate(userId, { coin: coin});
+        await TradeModel.create(trade);
+        await UserModel.findByIdAndUpdate(userId, { coin: newUserCoin});
 
         return res.status(200).json({ msg: 'Troca cadastrada com sucesso!' });
       } catch (e) {
