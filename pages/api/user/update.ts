@@ -42,11 +42,6 @@ const handler = nc()
         user.status = status;
       }
 
-      // enviar imagem do multer para o cosmic
-      // const user = req.body as UserRequest;
-      // const image = await uploadImageCosmic(req);
-      // user.avatar = image?.media?.url;
-
       const { file } = req;
       if (file && file.originalname) {
         const image = await uploadImageCosmic(req);
