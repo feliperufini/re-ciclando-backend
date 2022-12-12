@@ -10,14 +10,14 @@ import { policyCors } from "../../../middlewares/policyCors";
 const handler = nc()
   .get(async (req: NextApiRequest, res: NextApiResponse<ResponseDefaultMsg> | any) => {
     try {
-      const { feedstockId } = req?.query;
-      const feedstock = await FeedstockModel.findById(feedstockId);
+      const { id } = req?.query;
+      const feedstock = await FeedstockModel.findById(id);
 
       return res.status(200).json(feedstock);
     } catch (e) {
       console.log(e);
     }
-    return res.status(400).json({ error: 'Não foi possível obter os dados do produto!' });
+    return res.status(400).json({ error: 'Não foi possível obter os dados da matéria prima!' });
   })
   .put(async (req: any, res: NextApiResponse<ResponseDefaultMsg>) => {
     try {
@@ -29,10 +29,12 @@ const handler = nc()
       }
 
       const { name, coin, inventory } = req?.body;
+      console.log(name, coin, inventory);
+      
       if (name && name.length > 2) {
         feedstock.name = name;
       }
-      if (coin && coin.length > 0) {
+      if (coin && coin > 0) {
         feedstock.coin = coin;
       }
       if (inventory && inventory >= 0) {
