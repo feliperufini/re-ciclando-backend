@@ -3,7 +3,6 @@ import type { ResponseDefaultMsg } from "../../../types/ResponseDefaultMsg";
 import { connectMongoDB } from "../../../middlewares/connectMongoDB";
 import { validateTokenJWT } from "../../../middlewares/validateTokenJWT";
 import { BuyModel } from "../../../models/BuyModel";
-import { ProductModel } from "../../../models/ProductModel";
 
 import { policyCors } from "../../../middlewares/policyCors";
 
@@ -14,16 +13,21 @@ const buysUserEndpoint = async (req: NextApiRequest, res: NextApiResponse<Respon
     }
 
     const { id } = req?.query;
-    if (!id) {
-      return res.status(400).json({ error: 'Usuário não encontrado!' });
+    if (id) {
+      const buysOfUser = await BuyModel.find({ userId: id }).sort({date: -1}).limit(5);
+      if (!buysOfUser) {
+        return res.status(400).json({ error: 'Compra não encontrada!' });
+      }
+      
+      return res.status(200).json(buysOfUser);
+    } else {
+      const buys = await BuyModel.find({ deliver: false }).sort({date: -1});
+      if (!buys) {
+        return res.status(400).json({ error: 'Compra não encontrada!' });
+      }
+      
+      return res.status(200).json(buys);
     }
-
-    const buysOfUser = await BuyModel.find({ userId: id }).sort({date: -1}).limit(5);
-    if (!buysOfUser) {
-      return res.status(400).json({ error: 'Produto não encontrado!' });
-    }
-
-    return res.status(200).json(buysOfUser);
   } catch (e) {
     console.log(e);
     return res.status(400).json({ error: 'Não foi possível obter o histórico de compras!' });
